@@ -19,14 +19,19 @@
         enabled: yes
         state: started
 
+    - name: Remove old app files (clean cache)
+      file:
+        path: /home/ubuntu/app
+        state: absent
+
     - name: Copy app files to EC2
       copy:
         src: ./app/
         dest: /home/ubuntu/app
         mode: 0755
 
-    - name: Build Docker image
-      shell: docker build -t my-web-app /home/ubuntu/app
+    - name: Build Docker image (no cache)
+      shell: docker build --no-cache -t my-web-app /home/ubuntu/app
       args:
         chdir: /home/ubuntu
 
@@ -34,4 +39,4 @@
       shell: docker rm -f static-web || true
 
     - name: Run Docker container
-      shell: docker run -d -p 80:80 --name static-web my-web-app || true
+      shell: docker run -d -p 80:80 --name static-web my-web-app
