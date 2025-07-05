@@ -24,5 +24,5 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ansible
         echo "[web]" > hosts.ini
-        echo "${{ secrets.EC2_PUBLIC_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem" >> hosts.ini
+        echo "${{ secrets.EC2_PUBLIC_IP }} ansible_user=ubuntu ansible_ssh_private_key_file=key.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> hosts.ini
         ansible-playbook -i hosts.ini docker-setup.yml
