@@ -1,0 +1,37 @@
+---
+- name: Install Docker and Deploy App
+  hosts: web
+  become: true
+
+  tasks:
+    - name: Update APT
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Enable and start Docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Copy app files to EC2
+      copy:
+        src: ./app/
+        dest: /home/ubuntu/app
+        mode: 0755
+
+    - name: Build Docker image
+      shell: docker build -t my-web-app /home/ubuntu/app
+      args:
+        chdir: /home/ubuntu
+
+    - name: Remove existing container if exists
+      shell: docker rm -f static-web || true
+
+    - name: Run Docker container
+      shell: docker run -d -p 80:80 --name static-web my-web-app || true
