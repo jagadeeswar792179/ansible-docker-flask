@@ -35,6 +35,14 @@
       args:
         chdir: /home/ubuntu
 
+    - name: Stop and remove any container using port 80
+      shell: |
+        CONTAINER_ID=$(docker ps -q --filter "publish=80")
+        if [ ! -z "$CONTAINER_ID" ]; then
+          docker rm -f $CONTAINER_ID
+        fi
+      ignore_errors: yes
+
     - name: Remove existing container if exists
       shell: docker rm -f static-web || true
 
